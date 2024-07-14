@@ -35,6 +35,6 @@ struct DetailView: View {
     }
 }
 
-#Preview {
-    DetailView(user: User(id: UUID(), name: "", age: 0, company: "", email: "", address: "", about: "", registered: Date.now, tags: [], friends: []))
-}
+//#Preview {
+//    DetailView(user: User(id: UUID(), name: "", age: 0, company: "", email: "", address: "", about: "", registered: Date.now, tags: [], friends: []))
+//}

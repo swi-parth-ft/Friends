@@ -6,10 +6,12 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct ContentView: View {
     
-    @State var users: [User] = []
+    @Query var users: [User]
+    @Environment(\.modelContext) var modelContext
     
     var body: some View {
         NavigationStack {
@@ -22,8 +24,10 @@ struct ContentView: View {
                     }
                 }
                 .onAppear {
-                    Task {
-                        await loadUser()
+                    if users.isEmpty {
+                        Task {
+                            await loadUser()
+                        }
                     }
                 }
             }
@@ -34,23 +38,25 @@ struct ContentView: View {
     func loadUser() async {
         
         let url = URL(string: "https://www.hackingwithswift.com/samples/friendface.json")!
-        
-        URLSession.shared.dataTask(with: url) { data, response, error in
-            if let data = data {
-                do {
-                    let decoder = JSONDecoder()
-                    decoder.dateDecodingStrategy = .iso8601
-                    let decodedUsers = try decoder.decode([User].self, from: data)
-                    DispatchQueue.main.async {
-                        self.users = decodedUsers
+            
+            do {
+                let (data, _) = try await URLSession.shared.data(from: url)
+                let decoder = JSONDecoder()
+                decoder.dateDecodingStrategy = .iso8601
+                let decodedUsers = try decoder.decode([User].self, from: data)
+                
+                DispatchQueue.main.async {
+                    if users.isEmpty {
+                        for user in decodedUsers {
+                            modelContext.insert(user)
+                        }
+                    } else {
+                        print("Already Stored in SwiftData")
                     }
-                } catch {
-                    print("Decoding failed: \(error.localizedDescription)")
                 }
-            } else if let error = error {
-                print("Fetch failed: \(error.localizedDescription)")
+            } catch {
+                print("Fetch or decode failed: \(error.localizedDescription)")
             }
-        }.resume()
     }
 }
 
