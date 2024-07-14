@@ -25,11 +25,6 @@ struct User: Codable, Identifiable, Hashable {
     let friends: [Friend]
     
     var formattedDate: String {
-//        let dateFormatter = DateFormatter()
-//        dateFormatter.dateStyle = .medium
-//        dateFormatter.timeStyle = .medium
-//        let date = dateFormatter.string(from: registered)
-//        return "\(date)"
-        registered.formatted(date: .abbreviated, time: .omitted) ?? "N/A"
+        registered.formatted(date: .abbreviated, time: .omitted)
     }
 }

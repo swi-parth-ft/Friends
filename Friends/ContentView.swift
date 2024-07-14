@@ -38,7 +38,9 @@ struct ContentView: View {
         URLSession.shared.dataTask(with: url) { data, response, error in
             if let data = data {
                 do {
-                    let decodedUsers = try JSONDecoder().decode([User].self, from: data)
+                    let decoder = JSONDecoder()
+                    decoder.dateDecodingStrategy = .iso8601
+                    let decodedUsers = try decoder.decode([User].self, from: data)
                     DispatchQueue.main.async {
                         self.users = decodedUsers
                     }

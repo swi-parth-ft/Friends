@@ -16,7 +16,7 @@ struct DetailView: View {
             Text(user.name)
                 .font(.largeTitle)
                 .padding(.bottom)
-            Text("\(user.formattedDate)")
+            Text("\(user.registered)")
             Text("Age: \(user.age)")
             Text("Email: \(user.email)")
             Text("Address: \(user.address)")
