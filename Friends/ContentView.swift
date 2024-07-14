@@ -8,14 +8,47 @@
 import SwiftUI
 
 struct ContentView: View {
+    
+    @State var users: [User] = []
+    
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        NavigationStack {
+            VStack {
+                List {
+                    ForEach(users) { user in
+                        NavigationLink(destination: DetailView(user: user)) {
+                            Text("\(user.name)")
+                        }
+                    }
+                }
+                .onAppear {
+                    Task {
+                        await loadUser()
+                    }
+                }
+            }
+           
         }
-        .padding()
+    }
+    
+    func loadUser() async {
+        
+        let url = URL(string: "https://www.hackingwithswift.com/samples/friendface.json")!
+        
+        URLSession.shared.dataTask(with: url) { data, response, error in
+            if let data = data {
+                do {
+                    let decodedUsers = try JSONDecoder().decode([User].self, from: data)
+                    DispatchQueue.main.async {
+                        self.users = decodedUsers
+                    }
+                } catch {
+                    print("Decoding failed: \(error.localizedDescription)")
+                }
+            } else if let error = error {
+                print("Fetch failed: \(error.localizedDescription)")
+            }
+        }.resume()
     }
 }
 
